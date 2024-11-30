@@ -7,7 +7,7 @@ import io
 data = pd.DataFrame()
 
 st.title('📉 Basics Composite Indicators')
-st.header('Calculate composite indicators. Methods: PCA, BoD, Equal Weigths and Entropy')
+st.header("Calculate composite indicators. Methods: PCA, BoD, Equal Weigths and Shannon's Entropy")
 
 # Carregar arquivo Excel
 uploaded_file = st.sidebar.file_uploader("Select Excel file", type=["xlsx"])
