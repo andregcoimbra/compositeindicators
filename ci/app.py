@@ -6,6 +6,11 @@ import io
 
 data = pd.DataFrame()
 
+st.set_page_config(
+    page_title="Composite Indicators",
+    page_icon="📉"
+)
+
 st.title('📉 Basics Composite Indicators')
 st.header("Calculate composite indicators. Methods: PCA, BoD, Equal Weigths and Shannon's Entropy")
 
@@ -36,7 +41,6 @@ if uploaded_file is not None:
     method = st.sidebar.radio("Choose method", ("PCA", "BoD", "Equal Weights", "Shannon's Entropy"))
 
     # Botões
-    # expert_button = st.sidebar.button("Expert's Opinion")
     calculate_button = st.sidebar.button("Calculate")
     download_button = st.download_button("Download xlsx", data=uploaded_file, file_name="downloaded_file.xlsx")
 
