@@ -85,7 +85,7 @@ if uploaded_file is not None:
                         filtered_df['weights'] = filtered_df['weights'].apply(lambda x: [f"{i:.3f}" for i in x])
 
                         # Exibir a tabela
-                        st.subheader(f"{method} - Results table")
+                        st.subheader(f"{method}")
                         st.dataframe(filtered_df)
 
                         # Gerar um arquivo Excel para download
