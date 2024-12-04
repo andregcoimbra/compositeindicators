@@ -32,11 +32,11 @@ if uploaded_file is not None:
     selected_columns = st.sidebar.multiselect("Select columns", number_columns)
 
     # Selecionar variável de controle
-    control_variable = st.sidebar.selectbox("Select the control variable", [""] + number_columns)
+    control_variable = st.sidebar.selectbox("Select the control variable", ["Choose an option"] + number_columns)
 
     # Selecionar colunas
     string_columns = df.columns.tolist()
-    labels_column = st.sidebar.selectbox("Select label column", [""] + string_columns)
+    labels_column = st.sidebar.selectbox("Select label column", ["Choose an option"] + string_columns)
 
     # Botão
     calculate_button = st.sidebar.button("Calculate")
@@ -50,7 +50,7 @@ if uploaded_file is not None:
             with st.spinner('Calculating... Please wait.'):
                 # Normalização das colunas selecionadas 
                 for column in selected_columns:
-                    if control_variable and not df[control_variable].isnull().all():
+                    if (control_variable != "Choose an option") and not df[control_variable].isnull().all():
                         correlation = df[control_variable].corr(df[column])
                         normalization_type = 'Min' if correlation > 0 else 'Max'
                     else:
@@ -60,8 +60,8 @@ if uploaded_file is not None:
 
 
                 # Criar uma aba para cada método
-                tabs = st.tabs(["📉 PCA", "📈 BoD", "📊 Equal Weights", "💹 Shannon's Entropy"])
-                methods = ["PCA", "BoD", "Equal Weights", "Shannon's Entropy"]
+                tabs = st.tabs(["📉 PCA", "📊 Equal Weights", "💹 Shannon's Entropy", "📈 BoD"])
+                methods = ["PCA", "Equal Weights", "Shannon's Entropy", "BoD"]
 
                 for tab, method in zip(tabs, methods):
                     with tab:
@@ -79,11 +79,11 @@ if uploaded_file is not None:
 
                         # Organizar os resultados
                         filtered_df = pd.DataFrame(result)
-                        
-                        if labels_column:
+
+                        if labels_column.strip() != "Choose an option":
                             filtered_df.index = df[labels_column]
                         
-                        filtered_df = filtered_df.sort_values(by="ci", ascending=False)
+                        filtered_df.sort_values(by="ci", ascending=False, inplace=True)
 
                         # Formatar os pesos
                         filtered_df['weights'] = filtered_df['weights'].apply(lambda x: [f"{i:.3f}" for i in x])
