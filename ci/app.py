@@ -22,6 +22,10 @@ uploaded_file = st.sidebar.file_uploader("Select Excel file", type=["xlsx"])
 if uploaded_file is not None:
     # Carregar o arquivo Excel em um DataFrame
     df = pd.read_excel(uploaded_file)
+
+    if len(df) > 300:
+        df = df.iloc[:300]
+        st.warning("The file has been trimmed to use only the first 300 rows of data.")
     
     # Exibir as primeiras linhas do arquivo
     st.subheader("Data")
@@ -105,7 +109,10 @@ if uploaded_file is not None:
                         )
 
                         # Gráfico de Dispersão
-                        fig = px.scatter(filtered_df, y="ci", title=f"{method} - Composite Indicators", labels={"ci": "CI"})
+                        fig = px.scatter(filtered_df, 
+                                         y="ci", 
+                                         title=f"{method} - Composite Indicators",
+                                         labels={"ci": "CI"})
                         st.plotly_chart(fig)
 
                         # Histograma
