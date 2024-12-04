@@ -35,8 +35,8 @@ if uploaded_file is not None:
     control_variable = st.sidebar.selectbox("Select the control variable", [""] + number_columns)
 
     # Selecionar colunas
-    string_columns = df.select_dtypes(include=["object", "string"]).columns.tolist()
-    labels_column = st.sidebar.selectbox("Select label column", string_columns)
+    string_columns = df.columns.tolist()
+    labels_column = st.sidebar.selectbox("Select label column", [""] + string_columns)
 
     # Botão
     calculate_button = st.sidebar.button("Calculate")
@@ -78,7 +78,11 @@ if uploaded_file is not None:
                         result = model.run()
 
                         # Organizar os resultados
-                        filtered_df = pd.DataFrame(result, index=df[labels_column])
+                        filtered_df = pd.DataFrame(result)
+                        
+                        if labels_column:
+                            filtered_df.index = df[labels_column]
+                        
                         filtered_df = filtered_df.sort_values(by="ci", ascending=False)
 
                         # Formatar os pesos
