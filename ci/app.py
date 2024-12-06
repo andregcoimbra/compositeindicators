@@ -23,6 +23,14 @@ if uploaded_file is not None:
     # Carregar o arquivo Excel em um DataFrame
     df = pd.read_excel(uploaded_file)
 
+    data_missing = df.isnull().sum()
+    
+    if data_missing.any():
+        missing_columns = data_missing[data_missing > 0]
+        missing_info = [f"{col}: {count} missing" for col, count in missing_columns.items()]
+        st.error(f"Error: Data missing in the following columns: {', '.join(missing_info)}.")
+        st.stop()
+    
     if len(df) > 300:
         df = df.iloc[:300]
         st.warning("The file has been trimmed to use only the first 300 rows of data.")
