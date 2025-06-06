@@ -1,10 +1,12 @@
-import numpy as np
-from scipy.optimize import minimize
-from typing import List
-from dataclasses import dataclass
-from sklearn.decomposition import PCA
-from scipy.linalg import svd
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from dataclasses import dataclass
+from scipy.optimize import minimize
+from scipy.linalg import svd
+from typing import List
+
+import pandas as pd
+import numpy as np
 
 @dataclass
 class Result:
@@ -294,7 +296,7 @@ class Minimal_Uncertainty:
     # Objective function
     def objective(self, x):
         result_ic = self.aggregation_function(self.data, x)
-        ranking_ic = [sorted(result_ic).index(val) + 1 for val in result_ic]
+        ranking_ic = pd.Series(result_ic).rank(method='min').to_numpy()
         result_uncertainty = np.abs(self.ranking_indicators - ranking_ic)
         return np.mean(result_uncertainty)
         
@@ -309,15 +311,18 @@ class Minimal_Uncertainty:
 
     # Optmize weights
     def optmizer(self):
-        x0 = np.full(self.n, 1 / self.n)
+        x0 = np.random.rand(self.n)
+        x0 = x0 / np.sum(x0)
 
         cons = self.constraints(self.data)
 
         # Minimize objective function
-        result = minimize(lambda x: self.objective(x), x0, constraints=cons, bounds=self.bounds, method='SLSQP')
+        result = minimize(lambda x: self.objective(x), x0, 
+                          constraints=cons, bounds=self.bounds, method='SLSQP',
+                          options={'ftol': 1e-6, 'maxiter': 5000})
         
         if result.success:
-                return result.x, -result.fun
+            return result.x, result.fun
         else:
             raise ValueError(f"Optimize failure: {result.message}")
     

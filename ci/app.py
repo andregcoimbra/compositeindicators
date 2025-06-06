@@ -1,9 +1,10 @@
+from utils import (normalizar_dados, BOD_Calculation, 
+                   Entropy_Calculation, EqualWeights, 
+                   PCA_Calculation, Minimal_Uncertainty)
+import plotly.express as px
 import streamlit as st
 import pandas as pd
-from utils import normalizar_dados, BOD_Calculation, Entropy_Calculation, EqualWeights, PCA_Calculation, Minimal_Uncertainty
-import plotly.express as px
 import io
-
 
 data = pd.DataFrame()
 ranking_ic = []
@@ -97,7 +98,7 @@ if uploaded_file is not None:
 
                         #Ranking dos indicadores compostos para calcular a incerteza mínima
                         if method != "Minimal Uncertainty":
-                            ranking_ic.append(filtered_df["ci"].rank().to_list())
+                            ranking_ic.append(filtered_df["ci"].rank(method='min').to_list())
 
                         if labels_column.strip() != "Choose an option":
                             filtered_df.index = df[labels_column]
