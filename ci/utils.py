@@ -5,6 +5,10 @@ from scipy.optimize import minimize
 from scipy.linalg import svd
 from typing import List
 
+import warnings
+from scipy.optimize import OptimizeWarning
+warnings.filterwarnings("ignore", category=OptimizeWarning)
+
 import pandas as pd
 import numpy as np
 
