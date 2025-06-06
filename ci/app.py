@@ -55,6 +55,30 @@ if uploaded_file is not None:
     # Botão
     calculate_button = st.sidebar.button("Calculate")
 
+    # Novo bloco: campos para min/max de cada coluna selecionada
+    st.sidebar.markdown("---")
+    with st.sidebar.expander("Setup BoD: Expert Opinion"):
+        if selected_columns:
+            column_min_max = {}
+            for col in selected_columns:
+                col1, col2, col3 = st.columns([2, 1, 1])
+                col1.markdown("**"+col+"**")
+                min_value = col2.number_input(
+                    label="**Min**",
+                    value=0.0,
+                    format="%.4f",
+                    key=f"min_{col}"
+                )
+                max_value = col3.number_input(
+                    label="**Max**",
+                    value=1.0,
+                    format="%.4f",
+                    key=f"max_{col}"
+                )
+                column_min_max[col] = (min_value, max_value)
+        else:
+            column_min_max = {}
+
     if calculate_button:
         if not selected_columns:
             st.error("Error: You need to select at least one column to continue!")
@@ -83,7 +107,12 @@ if uploaded_file is not None:
                         if method == "PCA":
                             model = PCA_Calculation(data)
                         elif method == "BoD":
-                            model = BOD_Calculation(data)
+                            bounds = [column_min_max[col] for col in selected_columns if col in column_min_max]
+                            #verificar se bounds estas entre 0 e 1
+                            if any(min_val < 0 or max_val > 1 for min_val, max_val in bounds):
+                                st.error("Error: Min/Max values must be between 0 and 1.")
+                                continue
+                            model = BOD_Calculation(data, bounds=bounds)
                         elif method == "Equal Weights":
                             model = EqualWeights(data)
                         elif method == "Shannon's Entropy":
