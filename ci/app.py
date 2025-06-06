@@ -38,8 +38,8 @@ if uploaded_file is not None:
         st.warning("The file has been trimmed to use only the first 300 rows of data.")
     
     # Exibir as primeiras linhas do arquivo
-    st.subheader("Data")
-    st.write(df.head())
+    st.subheader("Data Preview")
+    st.dataframe(df.head(), hide_index=True)
 
     # Selecionar colunas
     number_columns = df.select_dtypes(include=["number"]).columns.tolist()
