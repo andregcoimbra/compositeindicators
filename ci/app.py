@@ -1,11 +1,13 @@
+from utils import (normalizar_dados, BOD_Calculation, 
+                   Entropy_Calculation, EqualWeights, 
+                   PCA_Calculation, Minimal_Uncertainty)
+import plotly.express as px
 import streamlit as st
 import pandas as pd
-from utils import normalizar_dados, BOD_Calculation, Entropy_Calculation, EqualWeights, PCA_Calculation
-import plotly.express as px
 import io
 
-
 data = pd.DataFrame()
+ranking_ic = []
 
 st.set_page_config(
     page_title="Composite Indicators",
@@ -36,8 +38,8 @@ if uploaded_file is not None:
         st.warning("The file has been trimmed to use only the first 300 rows of data.")
     
     # Exibir as primeiras linhas do arquivo
-    st.subheader("Data")
-    st.write(df.head())
+    st.subheader("Data Preview")
+    st.dataframe(df.head(), hide_index=True)
 
     # Selecionar colunas
     number_columns = df.select_dtypes(include=["number"]).columns.tolist()
@@ -72,8 +74,8 @@ if uploaded_file is not None:
 
 
                 # Criar uma aba para cada método
-                tabs = st.tabs(["📉 PCA", "📊 Equal Weights", "💹 Shannon's Entropy", "📈 BoD"])
-                methods = ["PCA", "Equal Weights", "Shannon's Entropy", "BoD"]
+                tabs = st.tabs(["📉 PCA", "📊 Equal Weights", "💹 Shannon's Entropy", "📈 BoD", "🧮 Minimal Uncertainty"])
+                methods = ["PCA", "Equal Weights", "Shannon's Entropy", "BoD", "Minimal Uncertainty"]
 
                 for tab, method in zip(tabs, methods):
                     with tab:
@@ -86,11 +88,17 @@ if uploaded_file is not None:
                             model = EqualWeights(data)
                         elif method == "Shannon's Entropy":
                             model = Entropy_Calculation(data)
+                        elif method == "Minimal Uncertainty":
+                            model = Minimal_Uncertainty(data, ranking_ic)
 
                         result = model.run()
 
                         # Organizar os resultados
                         filtered_df = pd.DataFrame(result)
+
+                        #Ranking dos indicadores compostos para calcular a incerteza mínima
+                        if method != "Minimal Uncertainty":
+                            ranking_ic.append(filtered_df["ci"].rank(method='min').to_list())
 
                         if labels_column.strip() != "Choose an option":
                             filtered_df.index = df[labels_column]
@@ -147,5 +155,6 @@ if uploaded_file is not None:
                             """,
                             unsafe_allow_html=True
                         )
+
 else:
     st.warning("Please upload an Excel file to proceed.")

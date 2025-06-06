@@ -1,10 +1,12 @@
-import numpy as np
-from scipy.optimize import minimize
-from typing import List
-from dataclasses import dataclass
-from sklearn.decomposition import PCA
-from scipy.linalg import svd
 from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from dataclasses import dataclass
+from scipy.optimize import minimize
+from scipy.linalg import svd
+from typing import List
+
+import pandas as pd
+import numpy as np
 
 @dataclass
 class Result:
@@ -276,3 +278,62 @@ class PCA_Calculation:
             results.append(Result(weights=weights, ci=idx))
         
         return results
+
+
+class Minimal_Uncertainty:
+    def __init__(self, data, ranking_indicators, aggregation_function=np.dot, bounds=None):
+        self.data = np.array(data)
+        self.regs, self.n = self.data.shape
+        self.ranking_indicators = np.array(ranking_indicators)
+        self.ranking_regs, self.ranking_n = self.ranking_indicators.shape
+        self.aggregation_function = aggregation_function
+        
+        if bounds is None:
+            self.bounds = [(0, 1)] * self.n
+        else:
+            self.bounds = bounds
+    
+    # Objective function
+    def objective(self, x):
+        result_ic = self.aggregation_function(self.data, x)
+        ranking_ic = pd.Series(result_ic).rank(method='min').to_numpy()
+        result_uncertainty = np.abs(self.ranking_indicators - ranking_ic)
+        return np.mean(result_uncertainty)
+        
+    # Constraints function
+    def constraints(self, data):
+        cons = []
+        for row in data:
+            cons.append({'type': 'ineq', 'fun': lambda x, row=row: 1 - self.aggregation_function(row, x)})
+
+        cons.append({'type': 'eq', 'fun': lambda x: 1 - np.sum(x)})  # Constraints sum = 1
+        return cons
+
+    # Optmize weights
+    def optmizer(self):
+        x0 = np.random.rand(self.n)
+        x0 = x0 / np.sum(x0)
+
+        cons = self.constraints(self.data)
+
+        # Minimize objective function
+        result = minimize(lambda x: self.objective(x), x0, 
+                          constraints=cons, bounds=self.bounds, method='SLSQP',
+                          options={'ftol': 1e-6, 'maxiter': 5000})
+        
+        if result.success:
+            return result.x, result.fun
+        else:
+            raise ValueError(f"Optimize failure: {result.message}")
+    
+    def composite_indicator(self, idx, weights):
+        return self.aggregation_function(self.data[idx], weights)
+    
+    def run(self):
+        result = []
+        weights, _ = self.optmizer()
+        for idx in range(self.regs):
+            ci = self.composite_indicator(idx, weights)
+            result.append(Result(weights=weights, ci=ci))
+        
+        return result
