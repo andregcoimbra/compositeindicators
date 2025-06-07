@@ -10,11 +10,11 @@ data = pd.DataFrame()
 ranking_ic = []
 
 st.set_page_config(
-    page_title="Composite Indicators",
+    page_title="S-CI-MaxS",
     page_icon="📉"
 )
 
-st.title('📉 Basics Composite Indicators')
+st.title('📉 Software for building composite indicators with maximum stability')
 st.header("Calculate composite indicators. Methods: PCA, BoD, Equal Weights, and Shannon's Entropy")
 
 # Carregar arquivo Excel
@@ -43,14 +43,23 @@ if uploaded_file is not None:
 
     # Selecionar colunas
     number_columns = df.select_dtypes(include=["number"]).columns.tolist()
-    selected_columns = st.sidebar.multiselect("Select columns", number_columns)
+    selected_columns = st.sidebar.multiselect("Select columns", 
+                                              number_columns,
+                                              help="Select the columns to be used in the calculation of composite indicators. At least one column must be selected.")
 
     # Selecionar variável de controle
-    control_variable = st.sidebar.selectbox("Select the control variable", ["Choose an option"] + number_columns)
+    control_variable = st.sidebar.selectbox("Select the control variable", 
+                                            ["Choose an option"] + number_columns,
+                                            help="""Select a control variable to normalize the data.
+                                            Min-Max normalization will be minimum-oriented if the correlation is greater than zero; otherwise, it will be maximum-oriented.
+                                            If no control variable is selected, minimum-oriented Min-Max normalization will be applied by default.""")
 
     # Selecionar colunas
     string_columns = df.columns.tolist()
-    labels_column = st.sidebar.selectbox("Select label column", ["Choose an option"] + string_columns)
+    labels_column = st.sidebar.selectbox("Select label column", 
+                                         ["Choose an option"] + string_columns,
+                                         help="""Select a column to use as labels for the rows.
+                                         If no column is selected, the rows will be labeled as 'DMU 1', 'DMU 2', etc.""")
 
     # Botão
     calculate_button = st.sidebar.button("Calculate")
