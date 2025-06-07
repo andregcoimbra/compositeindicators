@@ -81,7 +81,7 @@ if uploaded_file is not None:
         
         with st.sidebar.expander("Setup Minimal Uncertainty: Expert Opinion"):
             if selected_columns:
-                column_min_max_MI = {}
+                column_min_max_MU = {}
                 for col in selected_columns:
                     col1, col2, col3 = st.columns([2, 1, 1])
                     col1.markdown("**"+col+"**")
@@ -97,9 +97,9 @@ if uploaded_file is not None:
                         format="%.4f",
                         key=f"max_MI_{col}"
                     )
-                    column_min_max_MI[col] = (min_value, max_value)
+                    column_min_max_MU[col] = (min_value, max_value)
             else:
-                column_min_max_MI = {}
+                column_min_max_MU = {}
 
     if calculate_button:
         if not selected_columns:
@@ -140,7 +140,7 @@ if uploaded_file is not None:
                         elif method == "Shannon's Entropy":
                             model = Entropy_Calculation(data)
                         elif method == "Minimal Uncertainty":
-                            bounds = [column_min_max_MI[col] for col in selected_columns if col in column_min_max_MI]
+                            bounds = [column_min_max_MU[col] for col in selected_columns if col in column_min_max_MU]
                             #verificar se bounds estas entre 0 e 1
                             if any(min_val < 0 or max_val > 1 for min_val, max_val in bounds):
                                 st.error("Error: Min/Max values must be between 0 and 1.")
