@@ -59,7 +59,7 @@ if uploaded_file is not None:
     st.sidebar.markdown("---")
     with st.sidebar.expander("Setup BoD: Expert Opinion"):
         if selected_columns:
-            column_min_max = {}
+            column_min_max_BoD = {}
             for col in selected_columns:
                 col1, col2, col3 = st.columns([2, 1, 1])
                 col1.markdown("**"+col+"**")
@@ -75,9 +75,31 @@ if uploaded_file is not None:
                     format="%.4f",
                     key=f"max_{col}"
                 )
-                column_min_max[col] = (min_value, max_value)
+                column_min_max_BoD[col] = (min_value, max_value)
         else:
-            column_min_max = {}
+            column_min_max_BoD = {}
+        
+        with st.sidebar.expander("Setup Minimal Uncertainty: Expert Opinion"):
+            if selected_columns:
+                column_min_max_MU = {}
+                for col in selected_columns:
+                    col1, col2, col3 = st.columns([2, 1, 1])
+                    col1.markdown("**"+col+"**")
+                    min_value = col2.number_input(
+                        label="**Min**",
+                        value=0.0,
+                        format="%.4f",
+                        key=f"min_MI_{col}"
+                    )
+                    max_value = col3.number_input(
+                        label="**Max**",
+                        value=1.0,
+                        format="%.4f",
+                        key=f"max_MI_{col}"
+                    )
+                    column_min_max_MU[col] = (min_value, max_value)
+            else:
+                column_min_max_MU = {}
 
     if calculate_button:
         if not selected_columns:
@@ -107,7 +129,7 @@ if uploaded_file is not None:
                         if method == "PCA":
                             model = PCA_Calculation(data)
                         elif method == "BoD":
-                            bounds = [column_min_max[col] for col in selected_columns if col in column_min_max]
+                            bounds = [column_min_max_BoD[col] for col in selected_columns if col in column_min_max_BoD]
                             #verificar se bounds estas entre 0 e 1
                             if any(min_val < 0 or max_val > 1 for min_val, max_val in bounds):
                                 st.error("Error: Min/Max values must be between 0 and 1.")
@@ -118,9 +140,18 @@ if uploaded_file is not None:
                         elif method == "Shannon's Entropy":
                             model = Entropy_Calculation(data)
                         elif method == "Minimal Uncertainty":
-                            model = Minimal_Uncertainty(data, ranking_ic)
+                            bounds = [column_min_max_MU[col] for col in selected_columns if col in column_min_max_MU]
+                            #verificar se bounds estas entre 0 e 1
+                            if any(min_val < 0 or max_val > 1 for min_val, max_val in bounds):
+                                st.error("Error: Min/Max values must be between 0 and 1.")
+                                continue
+                            model = Minimal_Uncertainty(data, ranking_ic, bounds=bounds)
 
-                        result = model.run()
+                        try:
+                            result = model.run()
+                        except ValueError as e:
+                            st.error(f"Error: {str(e)}")
+                            continue
 
                         # Organizar os resultados
                         filtered_df = pd.DataFrame(result)
@@ -131,6 +162,8 @@ if uploaded_file is not None:
 
                         if labels_column.strip() != "Choose an option":
                             filtered_df.index = df[labels_column]
+                        else:
+                            filtered_df.index = ["DMU " + str(i+1) for i in df.index]
                         
                         filtered_df.sort_values(by="ci", ascending=False, inplace=True)
 
