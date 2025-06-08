@@ -5,7 +5,7 @@
 ## How to Use
 1. **Requirements**
 * Python 3.8+
-* Libraries: streamlit, pandas, plotly, openpyxl, sklearn, scipy
+* Libraries: streamlit, pandas, numpy, plotly, openpyxl, sklearn, scipy
 * Data file in Excel format (.xlsx)
 2. **Running the Application**
   
