@@ -1,4 +1,5 @@
 # User Guide: Software for Building Composite Indicators with Maximum Stability: the S-CI-MaxS 
+
 ## Description
 **S-CI-MaxS** is an interactive software for building composite indicators with maximum stability, using methods such as PCA, BoD, Equal Weights, and Shannon's Entropy. The application is built with Streamlit and allows users to import data, configure parameters, and obtain results visually and intuitively.
 
@@ -9,7 +10,8 @@
 * Data file in Excel format (.xlsx)
 2. Running the Application
 In the terminal, run:
-```streamlit run ci/app.py ``` 
+
+```bash streamlit run ci/app.py ``` 
 3. Step-by-Step
 a) Upload Data
 * In the sidebar, click Select Excel file and upload your .xlsx file.
