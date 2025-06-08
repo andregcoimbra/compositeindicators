@@ -9,9 +9,9 @@
 * Data file in Excel format (.xlsx)
 2. Running the Application
   
-  In the terminal, run:
+    In the terminal, run:
   
-  ```$ streamlit run ci/app.py ```
+    ```$ streamlit run ci/app.py ```
 
 3. Step-by-Step
 
