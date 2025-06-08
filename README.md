@@ -11,7 +11,8 @@
 2. Running the Application
 In the terminal, run:
 
-```bash streamlit run ci/app.py ``` 
+```streamlit run ci/app.py ```
+
 3. Step-by-Step
 a) Upload Data
 * In the sidebar, click Select Excel file and upload your .xlsx file.
