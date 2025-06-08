@@ -14,6 +14,7 @@
   ```$ streamlit run ci/app.py ```
 
 3. Step-by-Step
+
    a) Upload Data
       * In the sidebar, click Select Excel file and upload your .xlsx file.
       * The software will display a preview of your data.
