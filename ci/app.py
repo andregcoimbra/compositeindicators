@@ -6,6 +6,8 @@ import streamlit as st
 import pandas as pd
 import io
 
+version = "v1.0"
+
 data = pd.DataFrame()
 ranking_ic = []
 
@@ -16,6 +18,22 @@ st.set_page_config(
 
 st.title('📉 Software for building composite indicators with maximum stability')
 st.header("Calculate composite indicators. Methods: PCA, BoD, Equal Weights, and Shannon's Entropy")
+
+st.markdown(
+    f"""
+    <style>
+    [data-testid="stSidebar"]::after {{
+        content: "{version}";
+        position: absolute;
+        bottom: 10px;
+        left: 16px;
+        font-size: 0.8em;
+        color: gray;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Carregar arquivo Excel
 uploaded_file = st.sidebar.file_uploader("Select Excel file", type=["xlsx"])
