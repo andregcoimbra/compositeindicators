@@ -1,4 +1,3 @@
-# Basics CI
-Basics Composite Indicators
+# # Software for Building Composite Indicators with Maximum Stability: the S-CI-MaxS 
 
-Calculate composite indicators. Methods: PCA, BoD, Equal Weigths and Shannon's Entropy
+Calculate composite indicators. Methods: PCA, BoD, Equal Weigths, Shannon's Entropy and Minimal Uncertainty
