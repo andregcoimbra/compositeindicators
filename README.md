@@ -11,21 +11,26 @@
 2. Running the Application
 In the terminal, run:
 
-```streamlit run ci/app.py ```
+```$ streamlit run ci/app.py ```
 
 3. Step-by-Step
+   
 a) Upload Data
 * In the sidebar, click Select Excel file and upload your .xlsx file.
 * The software will display a preview of your data.
+  
 b) Select Columns
 * Choose the numeric columns to be used for calculating composite indicators in Select columns.
 * Optionally, select a control variable for data normalization in Select the control variable.
 * Optionally, select a label column to identify rows in Select label column.
+  
 c) Parameter Setup (optional)
 * In Setup BoD: Expert Opinion and Setup Minimal Uncertainty: Expert Opinion, set minimum and maximum values for each selected column if desired.
+
 d) Calculation
 * Click Calculate to process the data.
 * Results will be displayed in tabs, one for each method: PCA, Equal Weights, Shannon's Entropy, BoD, and Minimal Uncertainty.
+  
 e) Results
 * For each method, you can view:
     * Table with composite indicators and weights.
