@@ -18,7 +18,7 @@ et_xmlfile==2.0.0
 fonttools==4.55.0
 gitdb==4.0.11
 GitPython==3.1.43
-gwdatafind==1.2.0
+gwdatafind>=2.0.0
 gwosc==0.7.1
 gwpy>=3.1
 h5py==3.12.1
@@ -74,6 +74,7 @@ tzdata==2024.2
 tzlocal==5.2
 urllib3==2.2.3
 watchdog==6.0.0
+
 
 
 
