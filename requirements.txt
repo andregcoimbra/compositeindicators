@@ -29,7 +29,6 @@ joblib==1.4.2
 jsonschema==4.23.0
 jsonschema-specifications==2024.10.1
 kiwisolver==1.4.7
-ligo-segments==1.4.0
 ligotimegps==2.0.1
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
@@ -42,7 +41,7 @@ packaging==24.2
 pandas==2.2.3
 pillow==11.0.0
 plotly==5.24.1
-protobuf==5.29.0
+protobuf>=5.29.1
 pyarrow==18.1.0
 pycparser==2.22
 pydeck==0.9.1
@@ -75,4 +74,5 @@ tzdata==2024.2
 tzlocal==5.2
 urllib3==2.2.3
 watchdog==6.0.0
+
 
