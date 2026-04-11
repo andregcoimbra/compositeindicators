@@ -368,11 +368,11 @@ class Minimal_Uncertainty_V2:
         scores = self.aggregation_function(self.data, w_norm)
         ranking_novo = pd.Series(scores).rank(method='min').to_numpy()
         
-        # Somar diferenças absolutas contra todos os rankings de referência
+        # Somar quadrados das diferenças contra todos os rankings de referência (MSE)
         total_diff = 0
         for i in range(self.ranking_regs):
             ref_ranking = self.ranking_indicators[i]
-            total_diff += np.sum(np.abs(ranking_novo - ref_ranking))
+            total_diff += np.sum((ranking_novo - ref_ranking)**2)
         
         return total_diff
 
