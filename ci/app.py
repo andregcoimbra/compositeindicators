@@ -1,6 +1,6 @@
 from utils import (normalizar_dados, BOD_Calculation, 
                    Entropy_Calculation, EqualWeights, 
-                   PCA_Calculation, Minimal_Uncertainty)
+                   PCA_Calculation, Minimal_Uncertainty, Minimal_Uncertainty_V2)
 import plotly.express as px
 import streamlit as st
 import pandas as pd
@@ -79,6 +79,15 @@ if uploaded_file is not None:
                                          help="""Select a column to use as labels for the rows.
                                          If no column is selected, the rows will be labeled as 'DMU 1', 'DMU 2', etc.""")
 
+    # Selecionar métodos
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("**Select Methods**")
+    use_pca = st.sidebar.checkbox("PCA", value=True)
+    use_ew = st.sidebar.checkbox("Equal Weights", value=True)
+    use_entropy = st.sidebar.checkbox("Shannon's Entropy", value=True)
+    use_bod = st.sidebar.checkbox("BoD", value=True)
+    use_mu = st.sidebar.checkbox("Minimal Uncertainty", value=True)
+
     # Botão
     calculate_button = st.sidebar.button("Calculate")
 
@@ -145,10 +154,23 @@ if uploaded_file is not None:
                     
                     data[column] = normalizar_dados(df[column].tolist(), normalization_type)
 
+                # Criar uma aba para cada método selecionado
+                method_map = [
+                    (use_pca,     "📉 PCA",                  "PCA"),
+                    (use_ew,      "📊 Equal Weights",         "Equal Weights"),
+                    (use_entropy, "💹 Shannon's Entropy",     "Shannon's Entropy"),
+                    (use_bod,     "📈 BoD",                   "BoD"),
+                    (use_mu,      "🧮 Minimal Uncertainty",   "Minimal Uncertainty"),
+                ]
+                active_methods = [(tab_lbl, method) for enabled, tab_lbl, method in method_map if enabled]
 
-                # Criar uma aba para cada método
-                tabs = st.tabs(["📉 PCA", "📊 Equal Weights", "💹 Shannon's Entropy", "📈 BoD", "🧮 Minimal Uncertainty"])
-                methods = ["PCA", "Equal Weights", "Shannon's Entropy", "BoD", "Minimal Uncertainty"]
+                if not active_methods:
+                    st.error("Error: You need to select at least one method to continue!")
+                    st.stop()
+
+                tab_labels = [t for t, _ in active_methods]
+                methods    = [m for _, m in active_methods]
+                tabs = st.tabs(tab_labels)
 
                 for tab, method in zip(tabs, methods):
                     with tab:
@@ -172,7 +194,7 @@ if uploaded_file is not None:
                             if any(min_val < 0 or max_val > 1 for min_val, max_val in bounds):
                                 st.error("Error: Min/Max values must be between 0 and 1.")
                                 continue
-                            model = Minimal_Uncertainty(data, ranking_ic, bounds=bounds)
+                            model = Minimal_Uncertainty_V2(data, ranking_ic, bounds=bounds)
 
                         try:
                             result = model.run()
@@ -203,7 +225,7 @@ if uploaded_file is not None:
 
                         # Gerar um arquivo Excel para download
                         excel_buffer = io.BytesIO()
-                        filtered_df.to_excel(excel_buffer, index=False)
+                        filtered_df.to_excel(excel_buffer, index=True)
                         excel_buffer.seek(0)
 
                         st.download_button(

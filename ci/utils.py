@@ -1,7 +1,7 @@
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from dataclasses import dataclass
-from scipy.optimize import minimize
+from scipy.optimize import minimize, differential_evolution
 from scipy.linalg import svd
 from typing import List
 
@@ -321,6 +321,7 @@ class Minimal_Uncertainty:
         cons = self.constraints(self.data)
 
         # Minimize objective function
+        # Otimizador SLSQP (Sequential Least Squares Programming)
         result = minimize(lambda x: self.objective(x), x0, 
                           constraints=cons, bounds=self.bounds, method='SLSQP',
                           options={'ftol': 1e-6, 'maxiter': 5000})
@@ -339,5 +340,71 @@ class Minimal_Uncertainty:
         for idx in range(self.regs):
             ci = self.composite_indicator(idx, weights)
             result.append(Result(weights=weights, ci=ci))
+        
+        return result
+
+class Minimal_Uncertainty_V2:
+    def __init__(self, data, ranking_indicators, aggregation_function=np.dot, bounds=None, seed=42):
+        self.data = np.array(data)
+        self.regs, self.n = self.data.shape
+        self.ranking_indicators = np.array(ranking_indicators)
+        self.ranking_regs, self.ranking_n = self.ranking_indicators.shape
+        self.aggregation_function = aggregation_function
+        self.seed = seed
+        
+        if bounds is None:
+            self.bounds = [(0.0, 1.0)] * self.n
+        else:
+            self.bounds = bounds
+    
+    # Objective function
+    def objective(self, weights):
+        # Normalizar pesos para somar 1
+        w = np.array(weights)
+        w_norm = w / w.sum()
+        
+        # Calcular scores e ranking
+        scores = self.aggregation_function(self.data, w_norm)
+        ranking_novo = pd.Series(scores).rank(method='min').to_numpy()
+        
+        # Somar diferenças absolutas contra todos os rankings de referência
+        total_diff = 0
+        for i in range(self.ranking_regs):
+            ref_ranking = self.ranking_indicators[i]
+            total_diff += np.sum(np.abs(ranking_novo - ref_ranking))
+        
+        return total_diff
+
+    # Optimize weights
+    def optimizer(self):
+        # Usar differential_evolution para otimização global
+        result = differential_evolution(
+            self.objective,
+            self.bounds,
+            seed=self.seed,
+            maxiter=5000,
+            tol=1e-12,
+            popsize=25,
+            mutation=(0.5, 1.5),
+            recombination=0.9,
+            polish=True,
+        )
+        
+        if result.success:
+            # Normalizar pesos para somar 1
+            weights_norm = result.x / result.x.sum()
+            return weights_norm, result.fun
+        else:
+            raise ValueError(f"Optimize failure: {result.message}")
+    
+    def composite_indicator(self, idx, weights):
+        return self.aggregation_function(self.data[idx], weights)
+    
+    def run(self):
+        result = []
+        weights, _ = self.optimizer()
+        for idx in range(self.regs):
+            ci = self.composite_indicator(idx, weights)
+            result.append(Result(weights=weights.tolist(), ci=ci))
         
         return result
