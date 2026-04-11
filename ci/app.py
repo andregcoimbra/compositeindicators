@@ -7,7 +7,7 @@ import streamlit as st
 import pandas as pd
 import io
 
-version = "v1.0"
+version = "v1.3"
 
 data = pd.DataFrame()
 ranking_ic = []
