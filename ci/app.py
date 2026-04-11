@@ -168,6 +168,13 @@ if uploaded_file is not None:
                 if not active_methods:
                     st.error("Error: You need to select at least one method to continue!")
                     st.stop()
+                
+                # Validação: Minimal Uncertainty precisa de pelo menos 2 outros métodos selecionados
+                if use_mu:
+                    other_methods_count = sum([use_pca, use_ew, use_entropy, use_bod])
+                    if other_methods_count < 2:
+                        st.error("Error: 'Minimal Uncertainty' requires at least 2 other methods to be selected!")
+                        st.stop()
 
                 tab_labels = [t for t, _ in active_methods]
                 methods    = [m for _, m in active_methods]
