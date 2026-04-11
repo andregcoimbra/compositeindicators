@@ -343,6 +343,7 @@ class Minimal_Uncertainty:
         
         return result
 
+
 class Minimal_Uncertainty_V2:
     def __init__(self, data, ranking_indicators, aggregation_function=np.dot, bounds=None, seed=42):
         self.data = np.array(data)

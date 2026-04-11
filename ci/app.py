@@ -1,6 +1,7 @@
 from utils import (normalizar_dados, BOD_Calculation, 
                    Entropy_Calculation, EqualWeights, 
-                   PCA_Calculation, Minimal_Uncertainty, Minimal_Uncertainty_V2)
+                   PCA_Calculation, Minimal_Uncertainty,
+                   Minimal_Uncertainty_V2)
 import plotly.express as px
 import streamlit as st
 import pandas as pd
