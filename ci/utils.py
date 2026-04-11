@@ -389,6 +389,7 @@ class Minimal_Uncertainty_V2:
             mutation=(0.5, 1.5),
             recombination=0.9,
             polish=True,
+            workers=-1
         )
         
         if result.success:
