@@ -383,7 +383,7 @@ class Minimal_Uncertainty_V2:
             self.objective,
             self.bounds,
             seed=self.seed,
-            maxiter=5000,
+            maxiter=2000,
             tol=1e-12,
             popsize=25,
             mutation=(0.5, 1.5),
