@@ -202,7 +202,7 @@ if uploaded_file is not None:
                             if any(min_val < 0 or max_val > 1 for min_val, max_val in bounds):
                                 st.error("Error: Min/Max values must be between 0 and 1.")
                                 continue
-                            model = Minimal_Uncertainty(data, ranking_ic, bounds=bounds)
+                            model = Minimal_Uncertainty_V2(data, ranking_ic, bounds=bounds)
 
                         try:
                             result = model.run()

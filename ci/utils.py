@@ -302,7 +302,7 @@ class Minimal_Uncertainty:
         result_ic = self.aggregation_function(self.data, x)
         ranking_ic = pd.Series(result_ic).rank(method='min').to_numpy()
         result_uncertainty = np.abs(self.ranking_indicators - ranking_ic)
-        return np.mean(result_uncertainty**2)
+        return np.mean(result_uncertainty)
         
     # Constraints function
     def constraints(self, data):
