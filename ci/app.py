@@ -7,7 +7,7 @@ import streamlit as st
 import pandas as pd
 import io
 
-version = "v1.3"
+version = "v1.4"
 
 data = pd.DataFrame()
 ranking_ic = []
@@ -72,6 +72,17 @@ if uploaded_file is not None:
                                             help="""Select a control variable to normalize the data.
                                             Min-Max normalization will be minimum-oriented if the correlation is greater than zero; otherwise, it will be maximum-oriented.
                                             If no control variable is selected, minimum-oriented Min-Max normalization will be applied by default.""")
+    
+    # Ignorar normalização
+    skip_normalization = st.sidebar.checkbox(
+        "Data is already normalized (skip normalization)", 
+        value=False,
+        help=(
+            "Check this option if all selected columns are already normalized to the [0, 1] range. "
+            "When unchecked, Min-Max normalization is applied automatically based on the selected control variable. "
+            "Warning: skipping normalization with non-normalized data may produce invalid or misleading results."
+        )
+        )
 
     # Selecionar colunas
     string_columns = df.columns.tolist()
@@ -147,13 +158,16 @@ if uploaded_file is not None:
             with st.spinner('Calculating... Please wait.'):
                 # Normalização das colunas selecionadas 
                 for column in selected_columns:
-                    if (control_variable != "Choose an option") and not df[control_variable].isnull().all():
-                        correlation = df[control_variable].corr(df[column])
-                        normalization_type = 'Min' if correlation > 0 else 'Max'
+                    if skip_normalization:
+                        data[column] = df[column].tolist()
                     else:
-                        normalization_type = 'Min'
-                    
-                    data[column] = normalizar_dados(df[column].tolist(), normalization_type)
+                        if (control_variable != "Choose an option") and not df[control_variable].isnull().all():
+                            correlation = df[control_variable].corr(df[column])
+                            normalization_type = 'Min' if correlation > 0 else 'Max'
+                        else:
+                            normalization_type = 'Min'
+                        
+                        data[column] = normalizar_dados(df[column].tolist(), normalization_type)
 
                 # Criar uma aba para cada método selecionado
                 method_map = [
